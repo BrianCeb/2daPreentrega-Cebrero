@@ -1,5 +1,6 @@
 # GimnasioApp - Gestión Inteligente de Alumnos
-
+# Front : **https://gimnasio-frontend.vercel.app**
+# Back : **https://gimnasio-app.onrender.com/**
 **GimnasioApp** En este proyecto realice una aplicación web para facilitar la administración de un gimnasio. Permite llevar el control de los alumnos, sus pagos, ingresos y avisos de vencimiento, todo desde un panel moderno, responsivo y fácil de usar.
 
 ---
