@@ -9,11 +9,10 @@ import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import cors from 'cors'; // ✅ Nuevo
+import cors from 'cors';
 import alumnosRouter from './src/routes/alumnos.router.js';
 import Alumno from './src/models/Alumno.js';
-import ingresosRouter from './src/routes/ingresos.router.js'
-
+import ingresosRouter from './src/routes/ingresos.router.js';
 
 dotenv.config();
 
@@ -23,17 +22,21 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const httpServer = createServer(app);
 
-// ✅ Permitir CORS desde React (puerto Vite)
+// ✅ Agregamos múltiples orígenes para desarrollo y producción
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://gimnasio-frontend.vercel.app'
+];
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 
-// ✅ Configurar CORS en socket.io
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: allowedOrigins,
         methods: ['GET', 'POST']
     }
 });
@@ -48,36 +51,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handlebars con acceso a prototipos habilitado
+// Handlebars
 app.engine('handlebars', engine({
     handlebars: allowInsecurePrototypeAccess(Handlebars)
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// Ruta principal - página de inicio
+// Rutas
+app.use('/api/alumnos', alumnosRouter);
+app.use('/api/ingresos', ingresosRouter);
+
 app.get('/', (req, res) => {
     res.render('home');
 });
 
-// Rutas API
-app.use('/api/alumnos', alumnosRouter);
-console.log('📦 ingresosRouter:', ingresosRouter);
-app.use('/api/ingresos', ingresosRouter);
-console.log('✅ Router de ingresos montado');
-
 // Vista paginada
 app.get('/alumnos', async (req, res) => {
-    try {
-        const { limit = 5, page = 1, sort, nombre } = req.query;
-        const query = nombre ? { nombre: { $regex: nombre, $options: 'i' } } : {};
-        const options = {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sort: sort ? { nombre: sort === 'asc' ? 1 : -1 } : {}
-        };
-        const result = await Alumno.paginate(query, options);
+    const { limit = 5, page = 1, sort, nombre } = req.query;
+    const query = nombre ? { nombre: { $regex: nombre, $options: 'i' } } : {};
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        sort: sort ? { nombre: sort === 'asc' ? 1 : -1 } : {}
+    };
 
+    try {
+        const result = await Alumno.paginate(query, options);
         res.render('alumnosPaginados', {
             alumnos: result.docs,
             hasPrevPage: result.hasPrevPage,
@@ -92,8 +92,7 @@ app.get('/alumnos', async (req, res) => {
     }
 });
 
-// Vista realtime
-app.get('/realtimealumnos', async (req, res) => {
+app.get('/realtimealumnos', (req, res) => {
     res.render('alumnos');
 });
 
@@ -122,7 +121,8 @@ io.on('connection', async socket => {
                 dni: alumnoData.dni,
                 email: alumnoData.email,
                 fechaPago,
-                fechaVencimiento
+                fechaVencimiento,
+                fotoUrl: alumnoData.fotoUrl || ''
             });
 
             await nuevoAlumno.save();
@@ -140,7 +140,8 @@ io.on('connection', async socket => {
     });
 });
 
+// 🌍 Bind universal para Render
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Servidor en http://0.0.0.0:${PORT}`);
+    console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
