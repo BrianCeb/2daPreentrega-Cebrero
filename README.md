@@ -1,6 +1,6 @@
 # GimnasioApp - Gestión Inteligente de Alumnos
 
-**GimnasioApp** es una aplicación web desarrollada para facilitar la administración de un gimnasio. Permite llevar el control de los alumnos, sus pagos, ingresos y avisos de vencimiento, todo desde un panel moderno, responsivo y fácil de usar.
+**GimnasioApp** En este proyecto realice una aplicación web para facilitar la administración de un gimnasio. Permite llevar el control de los alumnos, sus pagos, ingresos y avisos de vencimiento, todo desde un panel moderno, responsivo y fácil de usar.
 
 ---
 
