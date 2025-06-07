@@ -9,7 +9,7 @@ const UploadImagePage = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setPreview(reader.result); // base64 string
+                setPreview(reader.result);
             };
             reader.readAsDataURL(file);
         }

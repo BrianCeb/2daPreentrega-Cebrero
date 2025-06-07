@@ -33,7 +33,7 @@ const AlumnoForm = ({ onSubmit, editingAlumno }) => {
     e.preventDefault();
     onSubmit(alumno);
 
-    // Limpiar formulario si fue edición o alta
+    // Limpiar formulario 
     setAlumno({
         nombre: '',
         apellido: '',

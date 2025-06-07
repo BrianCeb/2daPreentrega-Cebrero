@@ -8,7 +8,7 @@ const alumnoSchema = new mongoose.Schema({
     email: { type: String, required: true },
     fechaPago: { type: Date, required: true },
     fechaVencimiento: { type: Date, required: true },
-    fotoUrl: { type: String } // ✅ nuevo campo
+    fotoUrl: { type: String } 
 });
 
 alumnoSchema.plugin(mongoosePaginate);

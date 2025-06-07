@@ -1,4 +1,3 @@
-// backend/src/models/Ingreso.js
 import mongoose from 'mongoose';
 
 const ingresoSchema = new mongoose.Schema({

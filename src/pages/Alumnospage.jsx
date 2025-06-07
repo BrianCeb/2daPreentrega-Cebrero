@@ -45,10 +45,9 @@ const AlumnosPage = () => {
                 return res.json();
             })
             .then(() => {
-                toast.success('✅ Alumno actualizado correctamente');
+                toast.success(' Alumno actualizado correctamente');
                 setEditingAlumno(null);
                 setMostrarFormulario(false);
-                // Refrescar la lista completa
                 fetch(`${API_URL}/api/alumnos`)
                     .then(res => res.json())
                     .then(data => setAlumnos(data));

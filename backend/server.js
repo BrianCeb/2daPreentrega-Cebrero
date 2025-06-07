@@ -1,4 +1,4 @@
-// backend/server.js
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -22,7 +22,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const httpServer = createServer(app);
 
-// ✅ Agregamos múltiples orígenes para desarrollo y producción
 const allowedOrigins = [
     'http://localhost:5173',
     'https://gimnasio-frontend.vercel.app'
@@ -41,24 +40,20 @@ const io = new Server(httpServer, {
     }
 });
 
-// Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log('✅ Conectado a MongoDB'))
-    .catch(err => console.error('❌ Error al conectar a MongoDB:', err));
+    .then(() => console.log(' Conectado a MongoDB'))
+    .catch(err => console.error(' Error al conectar a MongoDB:', err));
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handlebars
 app.engine('handlebars', engine({
     handlebars: allowInsecurePrototypeAccess(Handlebars)
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// Rutas
 app.use('/api/alumnos', alumnosRouter);
 app.use('/api/ingresos', ingresosRouter);
 
@@ -66,7 +61,6 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
-// Vista paginada
 app.get('/alumnos', async (req, res) => {
     const { limit = 5, page = 1, sort, nombre } = req.query;
     const query = nombre ? { nombre: { $regex: nombre, $options: 'i' } } : {};
@@ -96,9 +90,8 @@ app.get('/realtimealumnos', (req, res) => {
     res.render('alumnos');
 });
 
-// WebSocket
 io.on('connection', async socket => {
-    console.log('📡 Cliente conectado');
+    console.log(' Cliente conectado');
 
     const alumnos = await Alumno.find();
     socket.emit('alumnos', alumnos);
@@ -107,7 +100,7 @@ io.on('connection', async socket => {
         try {
             const existente = await Alumno.findOne({ dni: alumnoData.dni });
             if (existente) {
-                console.log('❌ DNI duplicado');
+                console.log(' DNI duplicado');
                 return;
             }
 
@@ -129,7 +122,7 @@ io.on('connection', async socket => {
             const actualizados = await Alumno.find();
             io.emit('alumnos', actualizados);
         } catch (err) {
-            console.error('❌ Error al guardar alumno desde socket:', err);
+            console.error('Error al guardar alumno desde socket:', err);
         }
     });
 
@@ -140,8 +133,7 @@ io.on('connection', async socket => {
     });
 });
 
-// 🌍 Bind universal para Render
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
+    console.log(` Servidor corriendo en http://0.0.0.0:${PORT}`);
 });

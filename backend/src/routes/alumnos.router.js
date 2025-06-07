@@ -118,7 +118,7 @@ router.put('/:id', async (req, res) => {
 
         res.status(200).json(alumnoActualizado);
     } catch (error) {
-        console.error('❌ Error al actualizar alumno:', error);
+        console.error(' Error al actualizar alumno:', error);
         res.status(500).json({ error: 'Error al actualizar alumno' });
     }
 });
