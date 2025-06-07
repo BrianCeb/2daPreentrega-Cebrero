@@ -6,18 +6,20 @@ import {
     PieChart, Pie, Cell, Legend
 } from 'recharts';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const RealTimePage = () => {
     const [ingresosPorDia, setIngresosPorDia] = useState([]);
     const [estadoPagos, setEstadoPagos] = useState({ alDia: 0, porVencer: 0, vencido: 0 });
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/ingresos')
+        axios.get(`${API_URL}/api/ingresos`)
             .then(res => {
                 const agrupados = agruparPorDia(res.data);
                 setIngresosPorDia(agrupados);
             });
 
-        axios.get('http://localhost:3000/api/alumnos')
+        axios.get(`${API_URL}/api/alumnos`)
             .then(res => {
                 const estados = { alDia: 0, porVencer: 0, vencido: 0 };
                 const hoy = new Date();

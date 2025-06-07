@@ -1,9 +1,12 @@
+// PRIMER ARCHIVO A MODIFICAR:
+// src/pages/Ingresospage.jsx
+
 import React, { useState, useEffect } from 'react';
 import SidebarAdmin from '../components/SlidebarAdmin';
 import RegistroIngreso from '../components/RegistroIngreso';
 import { toast } from 'react-toastify';
-const API_URL = import.meta.env.VITE_API_URL;
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 const IngresosPage = () => {
     const [ingresos, setIngresos] = useState([]);
@@ -38,21 +41,23 @@ const IngresosPage = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevoIngreso)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error al registrar ingreso');
+                return res.json();
+            })
             .then((data) => {
-                setIngresos(prev => [data, ...prev]);
                 const alumno = alumnos.find(a => a.dni === nuevoIngreso.dni);
-
-                if (alumno) {
+                if (!alumno) {
+                    toast.error('⚠️ Ingreso registrado pero alumno no encontrado');
+                } else {
                     const vencido = new Date(alumno.fechaVencimiento) < new Date();
                     if (vencido) {
                         toast.warn(`⚠️ ${alumno.nombre} tiene el pago vencido`);
                     } else {
                         toast.success(`✅ Ingreso registrado para ${alumno.nombre}`);
                     }
-                } else {
-                    toast.info('Ingreso registrado (alumno no encontrado en la base)');
                 }
+                setIngresos(prev => [data, ...prev]);
             })
             .catch(err => {
                 console.error(err);
@@ -67,12 +72,10 @@ const IngresosPage = () => {
         return 'bg-green-500';
     };
 
-    const buscarAlumno = (dni) => {
-        return alumnos.find(a => a.dni === dni);
-    };
+    const buscarAlumno = (dni) => alumnos.find(a => a.dni === dni);
 
     const ingresosAgrupados = ingresos.reduce((acc, ingreso) => {
-        const fecha = new Date(ingreso.fecha).toLocaleDateString();
+        const fecha = ingreso.fecha ? new Date(ingreso.fecha).toLocaleDateString() : 'Fecha inválida';
         if (!acc[fecha]) acc[fecha] = [];
         acc[fecha].push(ingreso);
         return acc;
@@ -89,7 +92,7 @@ const IngresosPage = () => {
                 <div className="max-w-3xl w-full">
                     <h1 className="text-3xl font-bold mb-6 text-center">Registro de Ingresos</h1>
                     <p className="text-gray-600 text-center mb-8">
-                        Aquí podrás registrar y controlar el ingreso diario de los alumnos al gimnasio. Cada ingreso está agrupado por día y muestra el estado de pago de cada alumno.
+                        Aquí podrás registrar y controlar el ingreso diario de los alumnos al gimnasio.
                     </p>
                     <div className="flex justify-center mb-8">
                         <RegistroIngreso onRegistrarIngreso={handleRegistrarIngreso} />
@@ -97,7 +100,6 @@ const IngresosPage = () => {
 
                     <div className="mt-10">
                         <h2 className="text-xl font-semibold mb-4 text-center">Historial de Ingresos</h2>
-
                         {Object.entries(ingresosAgrupados).map(([fecha, listaIngresos]) => (
                             <div key={fecha} className="mb-6">
                                 <button
@@ -115,21 +117,17 @@ const IngresosPage = () => {
                                             const nombre = alumno ? `${alumno.nombre} ${alumno.apellido}` : 'Alumno desconocido';
 
                                             return (
-                                                <li
-                                                    key={index}
-                                                    className="bg-gray-100 p-3 rounded shadow flex items-center space-x-4"
-                                                >
+                                                <li key={index} className="bg-gray-100 p-3 rounded shadow flex items-center space-x-4">
                                                     <img
                                                         src={foto}
                                                         alt="Foto"
                                                         className="w-10 h-10 rounded-full object-cover"
                                                     />
-                                                    <span
-                                                        className={`inline-block w-4 h-4 rounded-full ${semaforo}`}
-                                                        title="Estado de pago"
-                                                    ></span>
+                                                    <span className={`inline-block w-4 h-4 rounded-full ${semaforo}`} title="Estado de pago"></span>
                                                     <span className="font-medium">{nombre}</span>
-                                                    <span className="text-sm text-gray-600">{new Date(ingreso.fecha).toLocaleTimeString()}</span>
+                                                    <span className="text-sm text-gray-600">
+                                                        {ingreso.fecha ? new Date(ingreso.fecha).toLocaleTimeString() : 'Sin hora'}
+                                                    </span>
                                                 </li>
                                             );
                                         })}

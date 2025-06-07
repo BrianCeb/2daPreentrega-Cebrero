@@ -3,12 +3,14 @@ import SidebarAdmin from '../components/SlidebarAdmin';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PagosPage = () => {
     const [alumnos, setAlumnos] = useState([]);
     const [filtro, setFiltro] = useState('todos');
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/alumnos')
+        axios.get(`${API_URL}/api/alumnos`)
             .then(res => setAlumnos(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -16,11 +18,11 @@ const PagosPage = () => {
     const actualizarPago = async (id) => {
         try {
             const hoy = new Date();
-            await axios.put(`http://localhost:3000/api/alumnos/${id}`, {
+            await axios.put(`${API_URL}/api/alumnos/${id}`, {
                 fechaPago: hoy.toISOString()
             });
             toast.success('Pago actualizado');
-            const res = await axios.get('http://localhost:3000/api/alumnos');
+            const res = await axios.get(`${API_URL}/api/alumnos`);
             setAlumnos(res.data);
         } catch (error) {
             console.error(error);
