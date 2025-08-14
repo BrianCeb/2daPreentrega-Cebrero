@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import AlumnosPage from './pages/Alumnospage';
 import IngresosPage from './pages/Ingresospage';
@@ -13,7 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <BrowserRouter>
+        
+        <HashRouter>
             <NavBar />
             <Routes>
                 <Route path="/" element={<InicioPage />} />
@@ -24,6 +25,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Route path="/upload-image" element={<UploadImagePage />} />
             </Routes>
             <ToastContainer position="top-right" autoClose={3000} />
-        </BrowserRouter>
+            </HashRouter>
+        
+            
     </React.StrictMode>
 );

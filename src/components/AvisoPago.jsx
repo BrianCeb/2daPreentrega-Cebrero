@@ -4,7 +4,9 @@ const AvisoPago = ({ alumnos }) => {
     const hoy = new Date();
 
     const getSemaforoColor = (fechaVenc) => {
-        const diff = (new Date(fechaVenc) - hoy) / (1000 * 60 * 60 * 24);
+        const fv = fechaVenc ? new Date(fechaVenc) : null;
+        if (!fv || isNaN(fv)) return 'bg-gray-400';
+        const diff = (fv - new Date()) / (1000 * 60 * 60 * 24);
         if (diff <= 3 && diff >= 0) return 'bg-yellow-400';
         if (diff < 0) return 'bg-red-500';
         return 'bg-green-500';

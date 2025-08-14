@@ -60,7 +60,9 @@ app.use('/api/ingresos', ingresosRouter);
 app.get('/', (req, res) => {
     res.render('home');
 });
-
+app.get('/health', (req, res) => {
+    res.json({ ok: true, time: new Date().toISOString() });
+});
 app.get('/alumnos', async (req, res) => {
     const { limit = 5, page = 1, sort, nombre } = req.query;
     const query = nombre ? { nombre: { $regex: nombre, $options: 'i' } } : {};
